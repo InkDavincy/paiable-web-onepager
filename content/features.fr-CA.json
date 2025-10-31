@@ -1,0 +1,28 @@
+{
+  "features": {
+    "title": "Tout ce dont vous avez besoin pour automatiser vos paiements",
+    "subtitle": "De l'extraction à la conciliation, Paiable simplifie chaque étape de votre processus comptable.",
+    "items": [
+      {
+        "title": "Extraction IA des factures",
+        "description": "Numérisez et extrayez automatiquement les données de vos factures PDF et emails avec une précision de 99%.",
+        "icon": "ai-extract"
+      },
+      {
+        "title": "Approbations & rappels automatisés",
+        "description": "Définissez des flux d'approbation personnalisés et recevez des rappels intelligents pour ne jamais manquer un paiement.",
+        "icon": "workflow"
+      },
+      {
+        "title": "Suivi des paiements & conciliation",
+        "description": "Suivez vos paiements en temps réel et conciliez automatiquement avec vos comptes bancaires.",
+        "icon": "payment-tracking"
+      },
+      {
+        "title": "Conformité Loi 25 / PIPEDA",
+        "description": "Toutes vos données restent au Canada avec un chiffrement de bout en bout et une conformité totale.",
+        "icon": "security"
+      }
+    ]
+  }
+}

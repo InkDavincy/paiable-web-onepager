@@ -1,0 +1,219 @@
+name: Build & Push Images to DEV ACR & Deploy to Azure Web Apps
+
+on:
+  push:
+    branches: [main]
+    # Only run when PRs are merged (i.e., a push to main). If you also want direct commits, keep as is.
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment (fixed)"
+        required: true
+        type: choice
+        default: dev
+        options:
+          - dev
+
+permissions:
+  contents: write # allow creating/pushing tags
+  packages: write
+  id-token: write # needed for azure/login OIDC
+
+env:
+  ENVIRONMENT_NAME: dev
+  WEB_IMAGE_NAME: paiable-onepager
+  MAJOR_VERSION: "1" # bump to start a new major series (e.g., "2")
+
+jobs:
+  build-and-push:
+    name: Build & Push Web & API
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: "${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }}"
+    outputs:
+      version: ${{ steps.semver.outputs.version }}
+
+    env:
+      REGISTRY_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }} # e.g. myregistry.azurecr.io
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # ensure tags/history available for versioning
+
+      - name: Validate required Azure / ACR secrets
+        run: |
+          missing=0
+          if [ -z "${{ secrets.AZURE_CLIENT_ID }}" ]; then echo "::error::Secret AZURE_CLIENT_ID missing"; missing=1; fi
+          if [ -z "${{ secrets.AZURE_TENANT_ID }}" ]; then echo "::error::Secret AZURE_TENANT_ID missing"; missing=1; fi
+          if [ -z "${{ secrets.AZURE_SUBSCRIPTION_ID }}" ]; then echo "::error::Secret AZURE_SUBSCRIPTION_ID missing"; missing=1; fi
+          if [ -z "${{ secrets.ACR_LOGIN_SERVER }}" ]; then echo "::error::Secret ACR_LOGIN_SERVER missing"; missing=1; fi
+          if [ $missing -eq 1 ]; then
+            echo "One or more required secrets are missing. Define them in Settings > Secrets and rerun."; exit 1; fi
+          echo "All required secrets are present (values masked)."
+
+      - name: Set up Node (for potential build steps)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Login to Azure using OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Sanity check Docker availability
+        run: |
+          docker version
+          echo "Docker available on runner."
+
+      # Compute next semver (patch bump within MAJOR_VERSION) based on Git tags like 1.x.x
+      - name: Compute next semver (patch bump under MAJOR)
+        id: semver
+        run: |
+          set -euo pipefail
+          git fetch --tags --force
+          MAJOR="${MAJOR_VERSION}"
+          latest=$(git tag -l "${MAJOR}.*" --sort=-v:refname | head -n1 || true)
+          if [ -z "$latest" ]; then
+            next="${MAJOR}.0.0"
+          else
+            IFS='.' read -r major minor patch <<<"$latest"
+            patch=$((patch+1))
+            next="${major}.${minor}.${patch}"
+          fi
+          echo "version=$next" >> $GITHUB_OUTPUT
+          IFS='.' read -r M m p <<<"$next"
+          echo "major=$M" >> $GITHUB_OUTPUT
+          echo "major_minor=$M.$m" >> $GITHUB_OUTPUT
+          echo "Computed version: $next (aliases: $M.$m, $M)"
+
+      - name: Create and push Git tag
+        if: github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          ver='${{ steps.semver.outputs.version }}'
+          echo "Tagging repo with $ver"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git rev-parse "$ver" >/dev/null 2>&1; then
+            echo "Tag $ver already exists; continuing."
+          else
+            git tag "$ver" -m "CI release $ver"
+            git push origin "$ver"
+          fi
+
+      - name: Azure ACR Login
+        id: acrlogin
+        run: |
+          set -euo pipefail
+          ACR_NAME=${REGISTRY_LOGIN_SERVER%%.azurecr.io}
+          echo "Logging into ACR '$ACR_NAME' ($REGISTRY_LOGIN_SERVER)..."
+          if az acr login --name "$ACR_NAME"; then
+            echo "Standard az acr login succeeded.";
+          else
+            echo "Standard az acr login failed. Falling back to --expose-token method.";
+            TOKEN=$(az acr login --name "$ACR_NAME" --expose-token --query accessToken -o tsv)
+            echo "$TOKEN" | docker login "$REGISTRY_LOGIN_SERVER" -u 00000000-0000-0000-0000-000000000000 --password-stdin
+            echo "Fallback token login succeeded.";
+          fi
+          echo "Logged into ACR: $REGISTRY_LOGIN_SERVER"
+
+      - name: Derive tag
+        id: vars
+        run: |
+          SHORT_SHA=${GITHUB_SHA::7}
+          DATE_TAG=$(date -u +%Y%m%d%H%M)
+          echo "TAG=${DATE_TAG}-${SHORT_SHA}" >> $GITHUB_OUTPUT
+          echo "Latest tag will be: $DATE_TAG-$SHORT_SHA"
+
+      - name: Build web image
+        run: |
+          VERSION='${{ steps.semver.outputs.version }}'
+          MAJOR='${{ steps.semver.outputs.major }}'
+          MAJOR_MINOR='${{ steps.semver.outputs.major_minor }}'
+          docker build \
+            -f Dockerfile.web \
+            --build-arg APP_VERSION="$VERSION" \
+            -t $REGISTRY_LOGIN_SERVER/$WEB_IMAGE_NAME:$VERSION \
+            -t $REGISTRY_LOGIN_SERVER/$WEB_IMAGE_NAME:$MAJOR_MINOR \
+            -t $REGISTRY_LOGIN_SERVER/$WEB_IMAGE_NAME:$MAJOR \
+            -t $REGISTRY_LOGIN_SERVER/$WEB_IMAGE_NAME:latest \
+            .
+
+      - name: Push images
+        run: |
+          VERSION='${{ steps.semver.outputs.version }}'
+          MAJOR='${{ steps.semver.outputs.major }}'
+          MAJOR_MINOR='${{ steps.semver.outputs.major_minor }}'
+          for repo in $WEB_IMAGE_NAME; do
+            docker push $REGISTRY_LOGIN_SERVER/$repo:$VERSION
+            docker push $REGISTRY_LOGIN_SERVER/$repo:$MAJOR_MINOR
+            docker push $REGISTRY_LOGIN_SERVER/$repo:$MAJOR
+            docker push $REGISTRY_LOGIN_SERVER/$repo:latest
+          done
+
+      - name: (Optional) Publish build info summary
+        run: |
+          VERSION='${{ steps.semver.outputs.version }}'
+          MAJOR='${{ steps.semver.outputs.major }}'
+          MAJOR_MINOR='${{ steps.semver.outputs.major_minor }}'
+          {
+            echo "Version: $VERSION";
+            echo "Images pushed:";
+            echo "- $REGISTRY_LOGIN_SERVER/$WEB_IMAGE_NAME:$VERSION";
+            echo "- $REGISTRY_LOGIN_SERVER/$WEB_IMAGE_NAME:$MAJOR_MINOR";
+            echo "- $REGISTRY_LOGIN_SERVER/$WEB_IMAGE_NAME:$MAJOR";
+            echo "- $REGISTRY_LOGIN_SERVER/$WEB_IMAGE_NAME:latest";
+          } >> $GITHUB_STEP_SUMMARY
+
+  # Deploy job to update Azure Web Apps to use the new images
+  deploy:
+    name: Sync Azure Web Applications to Latest Images
+    needs: build-and-push
+    environment: "${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }}"
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }} # e.g. myregistry.azurecr.io
+      WEB_APP_NAME: paiable-website-${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }}
+      RESOURCE_GROUP: rg-paiable-website-${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }}
+      VERSION: ${{ needs.build-and-push.outputs.version }}
+    steps:
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Sync Azure WebSite Application
+        uses: azure/CLI@v2
+        with:
+          inlineScript: |
+            set -euo pipefail
+            echo "Updating Web Apps to image tag $VERSION"
+            WEB_FULL_IMAGE="$REGISTRY_LOGIN_SERVER/$WEB_IMAGE_NAME:$VERSION"
+
+            echo "Setting Web App ($WEB_APP_NAME) -> $WEB_FULL_IMAGE"
+            az webapp config container set \
+              --name "$WEB_APP_NAME" \
+              --resource-group "$RESOURCE_GROUP" \
+              --container-image-name "$WEB_FULL_IMAGE" \
+              --docker-registry-server-url "https://$REGISTRY_LOGIN_SERVER"
+
+            echo "Container image configuration updated."
+      - name: Restarting Web App
+        uses: azure/CLI@v2
+        with:
+          inlineScript: |
+            echo "Restarting Web App to pull latest images, verified to version $VERSION"
+            az webapp restart --name "$WEB_APP_NAME" --resource-group "$RESOURCE_GROUP"
+            echo "Restart complete for $WEB_APP_NAME"

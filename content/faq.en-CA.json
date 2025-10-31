@@ -1,0 +1,32 @@
+{
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find quick answers to your questions about Paiable.",
+    "items": [
+      {
+        "question": "Does Paiable integrate with QuickBooks and other accounting software?",
+        "answer": "Yes! Paiable integrates natively with QuickBooks, Sage, and other popular accounting software. We regularly add new integrations based on customer requests. Zapier connectors and a complete API are also available for custom integrations."
+      },
+      {
+        "question": "How does Paiable ensure compliance with Bill 25 and PIPEDA?",
+        "answer": "All your data is hosted exclusively in Canada in SOC 2 certified data centers. We apply end-to-end encryption (AES-256), strict access controls, and follow all requirements of Quebec's Bill 25 and federal PIPEDA. We conduct regular security audits and can provide all necessary compliance documentation."
+      },
+      {
+        "question": "Can I export my data if I switch solutions?",
+        "answer": "Absolutely! Paiable gives you complete control over your data. You can export all your invoices, payment histories, and reports in standard formats (CSV, PDF, JSON) at any time. No forced retention period - your data belongs to you."
+      },
+      {
+        "question": "Is there a free trial available?",
+        "answer": "Yes! We offer a 14-day free trial with no credit card required. This gives you access to all Pro plan features so you can test Paiable with your real invoices. After the trial, you can choose the plan that suits you or continue with our limited free plan."
+      },
+      {
+        "question": "How accurate is the AI invoice extraction?",
+        "answer": "Our AI engine achieves an average accuracy of 99% for extracting main fields (amount, date, supplier, invoice number). For complex or unusual invoice formats, accuracy may be slightly lower, but the system constantly learns and improves over time. You can always manually verify and correct if necessary."
+      },
+      {
+        "question": "What level of customer support do you offer?",
+        "answer": "We offer email support for all plans, with a 24-hour response time on business days. Pro customers benefit from priority support (4-hour response time). Firm customers have access to dedicated phone support and an account manager. We also offer free training webinars and a comprehensive knowledge base."
+      }
+    ]
+  }
+}

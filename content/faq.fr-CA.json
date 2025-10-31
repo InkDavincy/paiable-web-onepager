@@ -1,0 +1,32 @@
+{
+  "faq": {
+    "title": "Questions fréquemment posées",
+    "subtitle": "Trouvez rapidement les réponses à vos questions sur Paiable.",
+    "items": [
+      {
+        "question": "Paiable s'intègre-t-il avec QuickBooks et d'autres logiciels comptables ?",
+        "answer": "Oui ! Paiable s'intègre nativement avec QuickBooks, Sage, et d'autres logiciels comptables populaires. Nous ajoutons régulièrement de nouvelles intégrations selon les demandes de nos clients. Des connecteurs Zapier et une API complète sont également disponibles pour des intégrations personnalisées."
+      },
+      {
+        "question": "Comment Paiable assure-t-il la conformité avec la Loi 25 et PIPEDA ?",
+        "answer": "Toutes vos données sont hébergées exclusivement au Canada dans des centres de données certifiés SOC 2. Nous appliquons un chiffrement de bout en bout (AES-256), des contrôles d'accès stricts, et suivons toutes les exigences de la Loi 25 du Québec et du PIPEDA fédéral. Nous effectuons des audits de sécurité réguliers et pouvons fournir toute la documentation de conformité nécessaire."
+      },
+      {
+        "question": "Puis-je exporter mes données si je change de solution ?",
+        "answer": "Absolument ! Paiable vous donne un contrôle total sur vos données. Vous pouvez exporter toutes vos factures, historiques de paiements, et rapports en formats standard (CSV, PDF, JSON) à tout moment. Aucune période de rétention forcée - vos données vous appartiennent."
+      },
+      {
+        "question": "Y a-t-il un essai gratuit disponible ?",
+        "answer": "Oui ! Nous offrons un essai gratuit de 14 jours sans carte de crédit requise. Cela vous donne accès à toutes les fonctionnalités du plan Pro pour que vous puissiez tester Paiable avec vos vraies factures. Après l'essai, vous pouvez choisir le plan qui vous convient ou continuer avec notre plan gratuit limité."
+      },
+      {
+        "question": "Quelle est la précision de l'extraction IA des factures ?",
+        "answer": "Notre moteur d'IA atteint une précision moyenne de 99% pour l'extraction des champs principaux (montant, date, fournisseur, numéro de facture). Pour les formats de factures complexes ou inhabituels, la précision peut être légèrement inférieure, mais le système apprend constamment et s'améliore avec le temps. Vous pouvez toujours vérifier et corriger manuellement si nécessaire."
+      },
+      {
+        "question": "Quel niveau de support client proposez-vous ?",
+        "answer": "Nous offrons un support par email pour tous les plans, avec un temps de réponse de 24h en jours ouvrables. Les clients Pro bénéficient d'un support prioritaire (4h de temps de réponse). Les clients Cabinet ont accès à un support téléphonique dédié et à un gestionnaire de compte. Nous offrons également des webinaires de formation gratuits et une base de connaissances complète."
+      }
+    ]
+  }
+}

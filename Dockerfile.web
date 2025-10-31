@@ -1,0 +1,77 @@
+# Dockerfile multi-stage pour Paiable One-pager
+# Stage 1: Build
+FROM node:18-alpine AS builder
+
+# Installer les dépendances système nécessaires
+RUN apk add --no-cache libc6-compat
+
+# Définir le répertoire de travail
+WORKDIR /app
+
+# Copier les fichiers de configuration des dépendances
+COPY package.json package-lock.json* ./
+
+# Installer les dépendances
+RUN npm ci --only=production && npm cache clean --force
+
+# Copier le code source
+COPY . .
+
+# Variables d'environnement pour le build
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+
+# Build de l'application Next.js en mode standalone
+RUN npm run build
+
+# Stage 2: Runtime avec NGINX
+FROM nginx:1.29.3-alpine AS runner
+
+# Installer Node.js dans l'image NGINX pour servir l'app Next.js
+RUN apk add --no-cache nodejs npm
+
+# Créer l'utilisateur nextjs
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Créer les répertoires nécessaires
+WORKDIR /app
+
+# Copier les fichiers buildés depuis le stage builder
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+
+# Configuration NGINX
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Script de démarrage qui lance à la fois Next.js et NGINX
+COPY <<EOF /app/start.sh
+#!/bin/sh
+set -e
+
+# Démarrer Next.js en arrière-plan
+echo "Démarrage de Next.js..."
+su nextjs -c "cd /app && node server.js" &
+
+# Attendre que Next.js démarre
+sleep 5
+
+# Démarrer NGINX
+echo "Démarrage de NGINX..."
+exec nginx -g 'daemon off;'
+EOF
+
+RUN chmod +x /app/start.sh
+
+# Variables d'environnement
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+
+# Exposer les ports
+EXPOSE 80
+EXPOSE 3000
+
+# Commande de démarrage
+CMD ["/app/start.sh"]

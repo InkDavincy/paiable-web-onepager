@@ -1,0 +1,45 @@
+{
+  "pricing": {
+    "title": "Choose the plan that's right for you",
+    "subtitle": "Start free and scale as you need. All plans include Canadian compliance.",
+    "annual": "Annual",
+    "monthly": "Monthly",
+    "plans": [
+      {
+        "name": "Starter",
+        "description": "Perfect for small businesses",
+        "price": "49",
+        "period": "month",
+        "features": ["Up to 50 invoices/month", "Basic AI extraction", "Simple approvals", "Email support", "Bill 25 compliance"],
+        "ctaLabel": "Start for free",
+        "popular": false
+      },
+      {
+        "name": "Pro",
+        "description": "For growing businesses",
+        "price": "149",
+        "period": "month",
+        "features": [
+          "Up to 500 invoices/month",
+          "Advanced AI extraction",
+          "Custom approval workflows",
+          "Automatic reconciliation",
+          "QuickBooks/Sage integrations",
+          "Priority support",
+          "Advanced reports"
+        ],
+        "ctaLabel": "Try Pro",
+        "popular": true
+      },
+      {
+        "name": "Firm",
+        "description": "Custom solution for accounting firms",
+        "price": "Custom quote",
+        "period": "",
+        "features": ["Unlimited invoices", "Multi-client management", "Full API access", "Custom integrations", "Dedicated training", "24/7 support", "Guaranteed SLA"],
+        "ctaLabel": "Contact us",
+        "popular": false
+      }
+    ]
+  }
+}

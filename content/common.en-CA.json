@@ -1,0 +1,53 @@
+{
+  "nav": {
+    "features": "Features",
+    "howItWorks": "How it works",
+    "pricing": "Pricing",
+    "demo": "Request a demo",
+    "tryFree": "Try for free"
+  },
+  "hero": {
+    "title": "Automate your invoices. Accelerate your payments.",
+    "subtitle": "Paiable centralizes extraction, validation and payment — with Canadian compliance.",
+    "ctaPrimary": "Try for free",
+    "ctaSecondary": "Request a demo",
+    "trustBadge": "Bill 25 & PIPEDA Compliant"
+  },
+  "footer": {
+    "description": "Automate your invoices and accelerate your payments with complete Canadian compliance. Secure hosting in Canada.",
+    "hosted": "Hosted in Canada",
+    "compliant": "Bill 25 Compliant",
+    "navigation": "Navigation",
+    "legal": "Legal & Contact",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "security": "Security",
+    "contact": "Contact",
+    "rights": "All rights reserved.",
+    "madeInCanada": "Designed and developed in Canada.",
+    "backToTop": "Back to top"
+  },
+  "common": {
+    "learnMore": "Learn more",
+    "getStarted": "Get started",
+    "comingSoon": "Coming soon",
+    "loading": "Loading..."
+  },
+  "contact": {
+    "title": "Contact Us",
+    "description": "Ready to automate your invoices? Contact our team for a personalized demonstration.",
+    "firstName": "First Name",
+    "firstNamePlaceholder": "Your first name",
+    "lastName": "Last Name",
+    "lastNamePlaceholder": "Your last name",
+    "email": "Email",
+    "emailPlaceholder": "your@email.com",
+    "company": "Company",
+    "companyPlaceholder": "Your company name",
+    "message": "Message",
+    "messagePlaceholder": "Describe your needs...",
+    "submit": "Send Message",
+    "successTitle": "Thank you for your message!",
+    "successMessage": "We will contact you soon."
+  }
+}

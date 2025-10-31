@@ -1,0 +1,28 @@
+{
+  "features": {
+    "title": "Everything you need to automate your payments",
+    "subtitle": "From extraction to reconciliation, Paiable simplifies every step of your accounting process.",
+    "items": [
+      {
+        "title": "AI Invoice Extraction",
+        "description": "Scan and automatically extract data from your PDF invoices and emails with 99% accuracy.",
+        "icon": "ai-extract"
+      },
+      {
+        "title": "Automated Approvals & Reminders",
+        "description": "Set up custom approval workflows and receive smart reminders to never miss a payment.",
+        "icon": "workflow"
+      },
+      {
+        "title": "Payment Tracking & Reconciliation",
+        "description": "Track your payments in real-time and automatically reconcile with your bank accounts.",
+        "icon": "payment-tracking"
+      },
+      {
+        "title": "Bill 25 / PIPEDA Compliance",
+        "description": "All your data stays in Canada with end-to-end encryption and full compliance.",
+        "icon": "security"
+      }
+    ]
+  }
+}

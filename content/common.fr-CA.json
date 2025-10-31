@@ -1,0 +1,53 @@
+{
+  "nav": {
+    "features": "Fonctionnalités",
+    "howItWorks": "Fonctionnement",
+    "pricing": "Prix",
+    "demo": "Demander une démo",
+    "tryFree": "Essayer gratuitement"
+  },
+  "hero": {
+    "title": "Automatisez vos factures. Accélérez vos paiements.",
+    "subtitle": "Paiable utilise l'IA pour centraliser la gestion de vos factures et dépenses, vous faisant gagner du temps et vous donnant des informations financières claires.",
+    "ctaPrimary": "Essayer gratuitement",
+    "ctaSecondary": "Demander une démo",
+    "trustBadge": "Conforme Loi 25 & PIPEDA"
+  },
+  "footer": {
+    "description": "Automatisez vos factures et accélérez vos paiements avec une conformité canadienne complète. Hébergement sécurisé au Canada.",
+    "hosted": "Hébergé au Canada",
+    "compliant": "Conforme Loi 25",
+    "navigation": "Navigation",
+    "legal": "Légal & Contact",
+    "privacy": "Confidentialité",
+    "terms": "Conditions",
+    "security": "Sécurité",
+    "contact": "Contact",
+    "rights": "Tous droits réservés.",
+    "madeInCanada": "Conçu et développé au Canada.",
+    "backToTop": "Retour en haut"
+  },
+  "common": {
+    "learnMore": "En savoir plus",
+    "getStarted": "Commencer",
+    "comingSoon": "Bientôt disponible",
+    "loading": "Chargement..."
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "description": "Prêt à automatiser vos factures ? Contactez notre équipe pour une démonstration personnalisée.",
+    "firstName": "Prénom",
+    "firstNamePlaceholder": "Votre prénom",
+    "lastName": "Nom",
+    "lastNamePlaceholder": "Votre nom",
+    "email": "Email",
+    "emailPlaceholder": "votre@email.com",
+    "company": "Entreprise",
+    "companyPlaceholder": "Nom de votre entreprise",
+    "message": "Message",
+    "messagePlaceholder": "Décrivez vos besoins...",
+    "submit": "Envoyer le message",
+    "successTitle": "Merci pour votre message !",
+    "successMessage": "Nous vous contacterons bientôt."
+  }
+}
